@@ -1,0 +1,124 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    ynab_budget_1: '%env(YNAB_BUDGET_1)%'
+    ynab_budget_2: '%env(YNAB_BUDGET_2)%'
+    ynab_account_name_1: '%env(YNAB_ACCOUNT_NAME_1)%'
+    ynab_account_name_2: '%env(YNAB_ACCOUNT_NAME_2)%'
+    ifttt_webhook_key: '%env(IFTTT_WEBHOOK_KEY)%'
+    ifttt_webhook_name: '%env(IFTTT_WEBHOOK_NAME)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    fints:config:1:
+        class: Fhp\FinTs
+        arguments:
+            $server: '%env(FHP_BANK_URL_1)%'
+            $port: '%env(int:FHP_BANK_PORT_1)%'
+            $bankCode: '%env(FHP_BANK_CODE_1)%'
+            $username: '%env(FHP_ONLINE_BANKING_USERNAME_1)%'
+            $pin: '%env(FHP_ONLINE_BANKING_PIN_1)%'
+
+    fints:config:2:
+        class: Fhp\FinTs
+        arguments:
+            $server: '%env(FHP_BANK_URL_2)%'
+            $port: '%env(int:FHP_BANK_PORT_2)%'
+            $bankCode: '%env(FHP_BANK_CODE_2)%'
+            $username: '%env(FHP_ONLINE_BANKING_USERNAME_2)%'
+            $pin: '%env(FHP_ONLINE_BANKING_PIN_2)%'
+
+    retrieve:transaction:service:1:
+        class: App\Bank\RetrieveTransactionService
+        public: true
+        arguments:
+            $finTs: '@fints:config:1'
+
+    retrieve:transaction:service:2:
+        class: App\Bank\RetrieveTransactionService
+        public: true
+        arguments:
+            $finTs: '@fints:config:2'
+
+    App\Bank\Transformer\TransactionToHbciTransactionTransformer:
+        public: true
+
+    App\Bank\Transformer\PayPalTransactionArrayToPayPalTransactionTransformer:
+        public: true
+
+    YNAB\Configuration:
+        calls:
+        - [setApiKey,['Authorization', '%env(YNAB_TOKEN)%']]
+        - [setApiKeyPrefix,['Authorization', 'Bearer']]
+
+    App\Paypal\RetrievePayPalTransactionService:
+        public: true
+
+    PayPal\Auth\OAuthTokenCredential:
+        public: true
+        arguments:
+            $clientId: '%env(PAYPAL_CLIENT_ID)%'
+            $clientSecret: '%env(PAYPAL_CLIENT_SECRET)%'
+
+    PayPal\Rest\ApiContext:
+        public: true
+        calls:
+        - [setConfig,[mode: 'LIVE']]
+        arguments:
+            $credential: '@PayPal\Auth\OAuthTokenCredential'
+
+    PayPal\Handler\RestHandler:
+        public: true
+        arguments:
+            $apiContext: '@PayPal\Rest\ApiContext'
+
+    PayPal\Transport\PayPalRestCall:
+        public: true
+        arguments:
+            $apiContext: '@PayPal\Rest\ApiContext'
+
+    YNAB\Client\TransactionsApi:
+        public: true
+        arguments:
+            $config: '@YNAB\Configuration'
+
+    YNAB\Client\ScheduledTransactionsApi:
+        public: true
+        arguments:
+            $config: '@YNAB\Configuration'
+
+    YNAB\Client\AccountsApi:
+        public: true
+        arguments:
+            $config: '@YNAB\Configuration'
+
+    App\Ynab\TransactionRetriever:
+        public: true
+
+    App\Ynab\TransactionAnalyser:
+        public: true
+
+    App\Ynab\TransactionBuilder:
+        public: true
