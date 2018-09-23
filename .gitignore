@@ -5,5 +5,3 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
-!/var/data/hbci.db
