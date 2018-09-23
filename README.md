@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dpeuscher/ynab_automation.svg?branch=master)](https://travis-ci.org/dpeuscher/ynab_automation)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdpeuscher%2Fynab_automation.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdpeuscher%2Fynab_automation?ref=badge_shield)
 # YNAB Automation
 
 A cli tool to import hbci and paypal transactions into your ynab (www.youneedabudget.com) account.
