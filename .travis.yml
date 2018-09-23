@@ -3,3 +3,5 @@ sudo: false
 php:
     - 7.2
 before_install: "composer install"
+
+script:
