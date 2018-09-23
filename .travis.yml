@@ -4,4 +4,4 @@ php:
     - 7.2
 before_install: "composer install"
 
-script:
+script: "bin/console cache:clear"
