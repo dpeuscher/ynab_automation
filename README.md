@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/dpeuscher/ynab_automation.svg?branch=master)](https://travis-ci.org/dpeuscher/ynab_automation)
+[![Violinist enabled](https://img.shields.io/badge/violinist-enabled-brightgreen.svg)](https://violinist.io)
+
 # YNAB Automation
 
 A cli tool to import hbci and paypal transactions into your ynab (www.youneedabudget.com) account.
