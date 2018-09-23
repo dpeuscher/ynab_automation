@@ -1,4 +1,4 @@
-#YNAB Automation
+# YNAB Automation
 
 A cli tool to import hbci and paypal transactions into your ynab (www.youneedabudget.com) account.
 
