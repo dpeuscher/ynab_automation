@@ -2,8 +2,8 @@
 
 namespace App\Command;
 
-use App\Paypal\RetrievePayPalTransactionService;
-use App\Paypal\Transformer\PayPalTransactionArrayToPayPalTransactionTransformer;
+use App\Boon\RetrieveBoonTransactionService;
+use App\Boon\Transformer\BoonTransactionArrayToBoonTransactionTransformer;
 use App\Ynab\TransactionAnalyser;
 use App\Ynab\TransactionBuilder;
 use App\Ynab\TransactionRetriever;
@@ -17,17 +17,17 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @category  ynab_automation
  * @copyright Copyright (c) 2018 Dominik Peuscher
  */
-class PayPalRetrieveCommand extends ContainerAwareCommand
+class BoonRetrieveCommand extends ContainerAwareCommand
 {
     /**
-     * @var RetrievePayPalTransactionService
+     * @var RetrieveBoonTransactionService
      */
-    protected $retrievePayPalTransactionService;
+    protected $retrieveBoonTransactionService;
 
     /**
-     * @var PayPalTransactionArrayToPayPalTransactionTransformer
+     * @var BoonTransactionArrayToBoonTransactionTransformer
      */
-    protected $payPalTransactionArrayToPayPalTransactionTransformer;
+    protected $boonTransactionArrayToBoonTransactionTransformer;
 
     /**
      * @var TransactionRetriever
@@ -46,8 +46,8 @@ class PayPalRetrieveCommand extends ContainerAwareCommand
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->retrievePayPalTransactionService = $this->getContainer()->get(RetrievePayPalTransactionService::class);
-        $this->payPalTransactionArrayToPayPalTransactionTransformer = $this->getContainer()->get(PayPalTransactionArrayToPayPalTransactionTransformer::class);
+        $this->retrieveBoonTransactionService = $this->getContainer()->get(RetrieveBoonTransactionService::class);
+        $this->boonTransactionArrayToBoonTransactionTransformer = $this->getContainer()->get(BoonTransactionArrayToBoonTransactionTransformer::class);
         $this->transactionRetriever = $this->getContainer()->get(TransactionRetriever::class);
         $this->transactionAnalyser = $this->getContainer()->get(TransactionAnalyser::class);
         $this->transactionBuilder = $this->getContainer()->get(TransactionBuilder::class);
@@ -56,7 +56,7 @@ class PayPalRetrieveCommand extends ContainerAwareCommand
     protected function configure(): void
     {
         $this
-            ->setName('paypal:retrieve')
+            ->setName('boon:retrieve')
             ->addArgument(
                 'fromDateInterval',
                 InputArgument::REQUIRED
@@ -73,7 +73,7 @@ class PayPalRetrieveCommand extends ContainerAwareCommand
             $from = clone $now;
             $from->sub(new \DateInterval($input->getArgument('fromDateInterval')));
             $to = new \DateTime($input->getArgument('toDate'));
-            $accountName = 'Paypal dpeuscher@gmail.com';
+            $accountName = 'Boon Dominik';
             $budget = $this->getContainer()->getParameter('ynab_budget_1');
 
             $fromYnab = clone $from;
@@ -86,10 +86,10 @@ class PayPalRetrieveCommand extends ContainerAwareCommand
             $ynabScheduledTransactions =
                 $this->transactionRetriever->retrieveScheduledTransactionsForAccount($budget, $accountName, $account);
 
-            $transactionArrays = $this->retrievePayPalTransactionService->getTransactions($from, $to);
+            $transactionArrays = $this->retrieveBoonTransactionService->getTransactions($from, $to);
             $transactions = [];
             foreach ($transactionArrays as $transactionArray) {
-                $transactions[] = $this->payPalTransactionArrayToPayPalTransactionTransformer->transform($transactionArray);
+                $transactions[] = $this->boonTransactionArrayToBoonTransactionTransformer->transform($transactionArray);
             }
 
             // Replace HbciTransaction by Transaction
@@ -100,7 +100,7 @@ class PayPalRetrieveCommand extends ContainerAwareCommand
             $namePayeeMap = $this->transactionAnalyser->buildNamePayeeMapByClosestMatch($transactions,
                 $ynabTransactions, $ynabScheduledTransactions);
 
-            $this->transactionBuilder->buildTransactionsFromPayPalTransactions($budget, $account, $newYnabTransactions,
+            $this->transactionBuilder->buildTransactionsFromBoonTransactions($budget, $account, $newYnabTransactions,
                 $namePayeeMap);
             echo 'Found ' . \count($transactions) . ' transactions.' . PHP_EOL;
         } catch (Exception $e) {

@@ -3,7 +3,7 @@
 
 # YNAB Automation
 
-A cli tool to import hbci and paypal transactions into your ynab (www.youneedabudget.com) account.
+A cli tool to import hbci, paypal and boon (wirecard) transactions into your ynab (www.youneedabudget.com) account.
 
 ## Configuration
 Setup an .env file with your data
@@ -53,6 +53,10 @@ The IFTTT_WEBHOOK_NAME is the trigger name you give your webhook when setup.
 Create a PayPal developer account here https://developer.paypal.com and setup a new app. You should get a clientId and a
 clientSecret. Put the in there.
 
+##### BOON_USERNAME, BOON_PASSWORD
+Just use your boon credentials here (username is your phone number including the country code - e.g. +49 for germany)
+that you registered with.
+
 ## Import
 The import tries to find the best matching transactions in your ynab account and only add new transactions that were not
 there yet. It also takes into account the scheduled transactions as good as possible. If you want a full coverage of 
@@ -77,6 +81,11 @@ This only supports 1 PayPal account. PayPal also does only allow 31 Days of retr
 pagination, it allows only for 100 transactions at a time. Should be enough for most usages, if you need more
 transactions, lower the run intervals.
 
+For importing Boon use this command:
+```bash
+bin/console boon:retrieve P30D
+```
+
 ## Push transactions
 Additional to the import into ynab function, I added a push of transactions via ifttt. It will keep a database of
 transactions and only pushes new ones (identified by a checksum). Feel free to read the database yourself in
@@ -87,9 +96,13 @@ To push your bank transactions use this command:
 ```bash
 bin/console --bankNumber=X hbci:push P31D
 ```
-and for PayPal use this command:
+for PayPal use this command:
 ```bash
 bin/console paypal:push P31D
+```
+and for Boon use this command:
+```bash
+bin/console boon:push P31D
 ```
 See section _Import_ to understand the parameters.
 

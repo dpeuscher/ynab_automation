@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Bank\Transformer;
+namespace App\Paypal\Transformer;
 
 use App\Entity\PayPalTransaction;
 

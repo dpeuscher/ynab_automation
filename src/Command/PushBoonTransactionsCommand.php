@@ -2,10 +2,10 @@
 
 namespace App\Command;
 
-use App\Entity\PayPalTransaction;
-use App\Paypal\RetrievePayPalTransactionService;
-use App\Paypal\Transformer\PayPalTransactionArrayToPayPalTransactionTransformer;
-use App\Repository\PayPalTransactionRepository;
+use App\Boon\RetrieveBoonTransactionService;
+use App\Boon\Transformer\BoonTransactionArrayToBoonTransactionTransformer;
+use App\Entity\BoonTransaction;
+use App\Repository\BoonTransactionRepository;
 use App\Ynab\TransactionAnalyser;
 use App\Ynab\TransactionRetriever;
 use Doctrine\ORM\EntityManager;
@@ -21,12 +21,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @category  ynab_automation
  * @copyright Copyright (c) 2018 Dominik Peuscher
  */
-class PushPaypalTransactionsCommand extends ContainerAwareCommand
+class PushBoonTransactionsCommand extends ContainerAwareCommand
 {
     /**
-     * @var RetrievePayPalTransactionService
+     * @var RetrieveBoonTransactionService
      */
-    private $retrievePayPalTransactionService;
+    private $retrieveBoonTransactionService;
 
     /**
      * @var TransactionRetriever
@@ -39,9 +39,9 @@ class PushPaypalTransactionsCommand extends ContainerAwareCommand
     private $transactionAnalyser;
 
     /**
-     * @var PayPalTransactionArrayToPayPalTransactionTransformer
+     * @var BoonTransactionArrayToBoonTransactionTransformer
      */
-    private $payPalTransactionArrayToPayPalTransactionTransformer;
+    private $boonTransactionArrayToBoonTransactionTransformer;
 
     /**
      * @var EntityManager
@@ -49,9 +49,9 @@ class PushPaypalTransactionsCommand extends ContainerAwareCommand
     private $entityManager;
 
     /**
-     * @var PayPalTransactionRepository
+     * @var BoonTransactionRepository
      */
-    private $payPalTransactionRepository;
+    private $boonTransactionRepository;
 
     /**
      * @var string
@@ -65,12 +65,12 @@ class PushPaypalTransactionsCommand extends ContainerAwareCommand
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->retrievePayPalTransactionService = $this->getContainer()->get(RetrievePayPalTransactionService::class);
+        $this->retrieveBoonTransactionService = $this->getContainer()->get(RetrieveBoonTransactionService::class);
         $this->transactionRetriever = $this->getContainer()->get(TransactionRetriever::class);
         $this->transactionAnalyser = $this->getContainer()->get(TransactionAnalyser::class);
-        $this->payPalTransactionArrayToPayPalTransactionTransformer = $this->getContainer()->get(PayPalTransactionArrayToPayPalTransactionTransformer::class);
+        $this->boonTransactionArrayToBoonTransactionTransformer = $this->getContainer()->get(BoonTransactionArrayToBoonTransactionTransformer::class);
         $this->entityManager = $this->getContainer()->get('doctrine.orm.default_entity_manager');
-        $this->payPalTransactionRepository = $this->entityManager->getRepository(PayPalTransaction::class);
+        $this->boonTransactionRepository = $this->entityManager->getRepository(BoonTransaction::class);
         $this->iftttWebhookKey = $this->getContainer()->getParameter('ifttt_webhook_key');
         $this->iftttWebhookName = $this->getContainer()->getParameter('ifttt_webhook_name');
     }
@@ -78,7 +78,7 @@ class PushPaypalTransactionsCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('paypal:push')
+            ->setName('boon:push')
             ->addArgument(
                 'fromDateInterval',
                 InputArgument::OPTIONAL
@@ -93,16 +93,16 @@ class PushPaypalTransactionsCommand extends ContainerAwareCommand
             $to = clone $now;
             $from->sub(new \DateInterval($input->getArgument('fromDateInterval')));
 
-            $transactions = $this->retrievePayPalTransactionService->getTransactions($from, $to);
+            $transactions = $this->retrieveBoonTransactionService->getTransactions($from, $to);
 
-            /** @var PayPalTransaction[] $newTransactions */
+            /** @var BoonTransaction[] $newTransactions */
             $newTransactions = [];
 
             foreach ($transactions as $transaction) {
-                $paypalTransaction = $this->payPalTransactionArrayToPayPalTransactionTransformer->transform($transaction);
-                $matches = $this->payPalTransactionRepository->findByChecksum($paypalTransaction->getChecksum());
+                $boonTransaction = $this->boonTransactionArrayToBoonTransactionTransformer->transform($transaction);
+                $matches = $this->boonTransactionRepository->findByChecksum($boonTransaction->getChecksum());
                 if (empty($matches)) {
-                    $newTransactions[] = $paypalTransaction;
+                    $newTransactions[] = $boonTransaction;
                 }
             }
 
@@ -120,19 +120,19 @@ class PushPaypalTransactionsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param PayPalTransaction $transaction
+     * @param BoonTransaction $transaction
      */
-    protected function pushMessage(PayPalTransaction $transaction): void
+    protected function pushMessage(BoonTransaction $transaction): void
     {
         $client = new Client();
-        $issuer = ucwords(strtolower($transaction->getPayer()));
+        $issuer = mb_convert_case(mb_strtolower($transaction->getPayer()), MB_CASE_TITLE, 'UTF-8');
         $value = number_format($transaction->getAmount(), 2, ',', '.') . ' €';
         $description = $transaction->getDescription();
         $client->post('https://maker.ifttt.com/trigger/' . $this->iftttWebhookName . '/with/key/' . $this->iftttWebhookKey,
             [
                 RequestOptions::JSON => [
                     'value1' => $issuer,
-                    'value2' => $value . ' PayPal',
+                    'value2' => $value . ' Boon',
                     'value3' => $description,
                 ],
             ]);

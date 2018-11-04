@@ -115,7 +115,7 @@ class CreditCardTransaction extends BankTransaction
     /**
      * @return string
      */
-    public function getCcPostingDate(): string
+    public function getCcPostingDate(): \DateTime
     {
         return $this->ccPostingDate;
     }

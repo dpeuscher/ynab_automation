@@ -4,6 +4,7 @@ namespace App\Ynab;
 
 use App\Bank\BankTransaction;
 use App\Bank\CreditCardTransaction;
+use App\Entity\BoonTransaction;
 use App\Entity\PayPalTransaction;
 use App\Entity\YnabCompatibleTransaction;
 use Fhp\Model\StatementOfAccount\Transaction;
@@ -58,7 +59,7 @@ class TransactionBuilder implements LoggerAwareInterface
             return $transaction->getBookingText() === 'Gebühren';
         });
         $debits = array_filter($newTransactions, function (Transaction $transaction) {
-            return $transaction->getBookingText() === 'Lastschrift (Einzugsermächtigung)';
+            return $transaction->getBookingText() === 'Lastschrift (Einzugsermächtigung)' || $transaction->getBookingText() === 'Dauerauftrag';
         });
         $bonuses = array_filter($newTransactions, function (Transaction $transaction) {
             return \in_array($transaction->getBookingText(),
@@ -66,8 +67,9 @@ class TransactionBuilder implements LoggerAwareInterface
                 && !preg_match('#^[0-9\.\-]+% AUSLANDSEINSATZENTG$#', $transaction->getName());
         });
         $feeBonuses = array_filter($newTransactions, function (Transaction $transaction) {
-            return $transaction->getBookingText() === 'Überweisungsgutschrift'
-                && preg_match('#^[0-9\.\-]+% AUSLANDSEINSATZENTG$#', $transaction->getName());
+            return $transaction->getBookingText() === 'ABSCHLUSS' ||
+                ($transaction->getBookingText() === 'Überweisungsgutschrift'
+                    && preg_match('#^[0-9\.\-]+% AUSLANDSEINSATZENTG$#', $transaction->getName()));
         });
         foreach ($newTransactions as $transaction) {
             /** @noinspection AdditionOperationOnArraysInspection */
@@ -148,7 +150,47 @@ class TransactionBuilder implements LoggerAwareInterface
             $this->createNewTransaction($budgetName, $account, $namePayeeMap, $transaction);
         }
         foreach ($transfers as $transaction) {
-            $this->createNewTransaction($budgetName, $account, $namePayeeMap, $transaction,'Transfer-Buchung: ');
+            $this->createNewTransaction($budgetName, $account, $namePayeeMap, $transaction, 'Transfer-Buchung: ');
+        }
+    }
+
+    /**
+     * @param string $budgetName
+     * @param Account $account
+     * @param PayPalTransaction[] $newTransactions
+     * @param array $namePayeeMap
+     * @throws \YNAB\ApiException
+     * @throws \Exception
+     */
+    public function buildTransactionsFromBoonTransactions(
+        string $budgetName,
+        Account $account,
+        array $newTransactions,
+        array $namePayeeMap
+    ): void {
+        $payments = array_filter($newTransactions, function (BoonTransaction $transaction) {
+            return $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_USAGE;
+        });
+        $transfers = array_filter($newTransactions, function (BoonTransaction $transaction) {
+            return $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_REFILL;
+        });
+        $feeBonuses = array_filter($newTransactions, function (BoonTransaction $transaction) {
+            return $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_COUPON;
+        });
+        foreach ($newTransactions as $transaction) {
+            /** @noinspection AdditionOperationOnArraysInspection */
+            if (!\in_array($transaction, $payments + $transfers + $feeBonuses, false)) {
+                throw new \RuntimeException('Unknown Transaction found: ' . $transaction->__toString());
+            }
+        }
+        foreach ($payments as $transaction) {
+            $this->createNewTransaction($budgetName, $account, $namePayeeMap, $transaction);
+        }
+        foreach ($feeBonuses as $transaction) {
+            $this->createNewTransaction($budgetName, $account, $namePayeeMap, $transaction);
+        }
+        foreach ($transfers as $transaction) {
+            $this->createNewTransaction($budgetName, $account, $namePayeeMap, $transaction, 'Transfer-Buchung: ');
         }
     }
 
@@ -178,8 +220,8 @@ class TransactionBuilder implements LoggerAwareInterface
         $newTransaction->setAccountId($account->getId());
         $amount = (int)($transaction->getAmount() * 1000);
         $newTransaction->setAmount($amount);
-        $newTransaction->setDate(\DateTime::createFromFormat(\DateTimeInterface::RFC3339,
-            $transaction->getDate()->format(\DateTimeInterface::RFC3339)));
+        $newTransaction->setDate(\DateTime::createFromFormat('Y-m-d\TH:i:sP',
+            $transaction->getDate()->format('Y-m-d\TH:i:sP')));
         $newTransaction->setApproved(false);
         $mainDescription = ($memoPrefix ? $memoPrefix . ' - ' : '') .
             ($overrideTransactionName ?? $transaction->getPayer() ? $transaction->getPayer() . ' - ' : '') . $transaction->getDescription();

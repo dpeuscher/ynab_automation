@@ -15,6 +15,7 @@
         "php": "^7.2",
         "ext-iconv": "*",
         "ext-json": "*",
+        "ext-simplexml": "*",
         "jorijn/ynab-sdk-php": "dev-master",
         "mschindler83/fints-hbci-php": "dev-master",
         "paypal/rest-api-sdk-php": "^1.13",

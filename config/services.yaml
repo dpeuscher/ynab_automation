@@ -65,7 +65,7 @@ services:
     App\Bank\Transformer\TransactionToHbciTransactionTransformer:
         public: true
 
-    App\Bank\Transformer\PayPalTransactionArrayToPayPalTransactionTransformer:
+    App\Paypal\Transformer\PayPalTransactionArrayToPayPalTransactionTransformer:
         public: true
 
     YNAB\Configuration:
@@ -75,6 +75,15 @@ services:
 
     App\Paypal\RetrievePayPalTransactionService:
         public: true
+
+    App\Boon\Transformer\BoonTransactionArrayToBoonTransactionTransformer:
+        public: true
+
+    App\Boon\RetrieveBoonTransactionService:
+        public: true
+        arguments:
+            $username: '%env(BOON_USERNAME)%'
+            $password: '%env(BOON_PASSWORD)%'
 
     PayPal\Auth\OAuthTokenCredential:
         public: true
