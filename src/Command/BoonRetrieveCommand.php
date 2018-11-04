@@ -73,7 +73,7 @@ class BoonRetrieveCommand extends ContainerAwareCommand
             $from = clone $now;
             $from->sub(new \DateInterval($input->getArgument('fromDateInterval')));
             $to = new \DateTime($input->getArgument('toDate'));
-            $accountName = 'Boon Dominik';
+            $accountName = $this->getContainer()->getParameter('ynab_account_boon');
             $budget = $this->getContainer()->getParameter('ynab_budget_1');
 
             $fromYnab = clone $from;

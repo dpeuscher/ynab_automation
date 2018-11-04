@@ -5,6 +5,8 @@ parameters:
     ynab_budget_2: '%env(YNAB_BUDGET_2)%'
     ynab_account_name_1: '%env(YNAB_ACCOUNT_NAME_1)%'
     ynab_account_name_2: '%env(YNAB_ACCOUNT_NAME_2)%'
+    ynab_account_boon: '%env(YNAB_ACCOUNT_BOON)%'
+    ynab_account_paypal: '%env(YNAB_ACCOUNT_PAYPAL)%'
     ifttt_webhook_key: '%env(IFTTT_WEBHOOK_KEY)%'
     ifttt_webhook_name: '%env(IFTTT_WEBHOOK_NAME)%'
 

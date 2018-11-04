@@ -49,13 +49,13 @@ Go to this page to get your IFTTT_WEBHOOK_KEY: https://ifttt.com/services/maker_
 
 The IFTTT_WEBHOOK_NAME is the trigger name you give your webhook when setup. 
 
-##### PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET
+##### PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, YNAB_ACCOUNT_PAYPAL
 Create a PayPal developer account here https://developer.paypal.com and setup a new app. You should get a clientId and a
-clientSecret. Put the in there.
+clientSecret. Put the in there. YNAB_ACCOUNT_PAYPAL should be the name of your PayPal account in YNAB.
 
-##### BOON_USERNAME, BOON_PASSWORD
+##### BOON_USERNAME, BOON_PASSWORD, YNAB_ACCOUNT_BOON
 Just use your boon credentials here (username is your phone number including the country code - e.g. +49 for germany)
-that you registered with.
+that you registered with. YNAB_ACCOUNT_BOON should be the name of your Boon account in YNAB.
 
 ## Import
 The import tries to find the best matching transactions in your ynab account and only add new transactions that were not

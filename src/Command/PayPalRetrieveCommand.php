@@ -73,7 +73,7 @@ class PayPalRetrieveCommand extends ContainerAwareCommand
             $from = clone $now;
             $from->sub(new \DateInterval($input->getArgument('fromDateInterval')));
             $to = new \DateTime($input->getArgument('toDate'));
-            $accountName = 'Paypal dpeuscher@gmail.com';
+            $accountName = $this->getContainer()->getParameter('ynab_account_paypal');
             $budget = $this->getContainer()->getParameter('ynab_budget_1');
 
             $fromYnab = clone $from;
