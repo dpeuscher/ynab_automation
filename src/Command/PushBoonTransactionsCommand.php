@@ -15,6 +15,7 @@ use GuzzleHttp\RequestOptions;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -65,7 +66,6 @@ class PushBoonTransactionsCommand extends ContainerAwareCommand
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->retrieveBoonTransactionService = $this->getContainer()->get(RetrieveBoonTransactionService::class);
         $this->transactionRetriever = $this->getContainer()->get(TransactionRetriever::class);
         $this->transactionAnalyser = $this->getContainer()->get(TransactionAnalyser::class);
         $this->boonTransactionArrayToBoonTransactionTransformer = $this->getContainer()->get(BoonTransactionArrayToBoonTransactionTransformer::class);
@@ -79,7 +79,13 @@ class PushBoonTransactionsCommand extends ContainerAwareCommand
     {
         $this
             ->setName('boon:push')
-            ->addArgument(
+            ->addOption(
+                'bankNumber',
+                'b',
+                InputOption::VALUE_REQUIRED,
+                'Choose the account to use',
+                '1'
+            )->addArgument(
                 'fromDateInterval',
                 InputArgument::OPTIONAL
             );
@@ -88,6 +94,12 @@ class PushBoonTransactionsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $bankNumber = $input->getOption('bankNumber');
+            if (!\in_array($bankNumber, ['1', '2'], true)) {
+                throw new \RuntimeException('Currently only 2 accounts are supported');
+            }
+            $this->retrieveBoonTransactionService = $this->getContainer()->get('retrieve:boontransaction:service:' . $bankNumber);
+
             $now = new \DateTime();
             $from = clone $now;
             $to = clone $now;

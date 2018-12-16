@@ -11,6 +11,7 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -46,7 +47,6 @@ class BoonRetrieveCommand extends ContainerAwareCommand
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->retrieveBoonTransactionService = $this->getContainer()->get(RetrieveBoonTransactionService::class);
         $this->boonTransactionArrayToBoonTransactionTransformer = $this->getContainer()->get(BoonTransactionArrayToBoonTransactionTransformer::class);
         $this->transactionRetriever = $this->getContainer()->get(TransactionRetriever::class);
         $this->transactionAnalyser = $this->getContainer()->get(TransactionAnalyser::class);
@@ -57,7 +57,13 @@ class BoonRetrieveCommand extends ContainerAwareCommand
     {
         $this
             ->setName('boon:retrieve')
-            ->addArgument(
+            ->addOption(
+                'bankNumber',
+                'b',
+                InputOption::VALUE_REQUIRED,
+                'Choose the account to use',
+                '1'
+            )->addArgument(
                 'fromDateInterval',
                 InputArgument::REQUIRED
             )->addArgument(
@@ -69,11 +75,17 @@ class BoonRetrieveCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
         try {
+            $bankNumber = $input->getOption('bankNumber');
+            if (!\in_array($bankNumber, ['1', '2'], true)) {
+                throw new \RuntimeException('Currently only 2 accounts are supported');
+            }
+            $this->retrieveBoonTransactionService = $this->getContainer()->get('retrieve:boontransaction:service:' . $bankNumber);
+
             $now = new \DateTime();
             $from = clone $now;
             $from->sub(new \DateInterval($input->getArgument('fromDateInterval')));
             $to = new \DateTime($input->getArgument('toDate'));
-            $accountName = $this->getContainer()->getParameter('ynab_account_boon');
+            $accountName = $this->getContainer()->getParameter('ynab_account_boon_' . $bankNumber);
             $budget = $this->getContainer()->getParameter('ynab_budget_1');
 
             $fromYnab = clone $from;

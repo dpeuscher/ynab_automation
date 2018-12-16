@@ -8,7 +8,8 @@ A cli tool to import hbci, paypal and boon (wirecard) transactions into your yna
 ## Configuration
 Setup an .env file with your data
 
-The _X parameters are either _1 or _2 which can be used for 2 different bank accounts. Currently only two are supported.
+The _X parameters are either _1 or _2 which can be used for 2 different bank (or boon) accounts. Currently only two (for
+ boon and bank) are supported.
 
 ##### YNAB_TOKEN
 Generate your _Personal Access Token_ as described here: https://api.youneedabudget.com/#personal-access-tokens
@@ -53,9 +54,9 @@ The IFTTT_WEBHOOK_NAME is the trigger name you give your webhook when setup.
 Create a PayPal developer account here https://developer.paypal.com and setup a new app. You should get a clientId and a
 clientSecret. Put the in there. YNAB_ACCOUNT_PAYPAL should be the name of your PayPal account in YNAB.
 
-##### BOON_USERNAME, BOON_PASSWORD, YNAB_ACCOUNT_BOON
+##### BOON_USERNAME_X, BOON_PASSWORD_X, YNAB_ACCOUNT_BOON_X
 Just use your boon credentials here (username is your phone number including the country code - e.g. +49 for germany)
-that you registered with. YNAB_ACCOUNT_BOON should be the name of your Boon account in YNAB.
+that you registered with. YNAB_ACCOUNT_BOON_X should be the name of your Boon account in YNAB.
 
 ## Import
 The import tries to find the best matching transactions in your ynab account and only add new transactions that were not
@@ -83,8 +84,9 @@ transactions, lower the run intervals.
 
 For importing Boon use this command:
 ```bash
-bin/console boon:retrieve P30D
+bin/console --bankNumber=X boon:retrieve P30D
 ```
+X is either 1 or 2 (depending which boon configuration should be used). if omitted it defaults to 1.
 
 ## Push transactions
 Additional to the import into ynab function, I added a push of transactions via ifttt. It will keep a database of
@@ -102,7 +104,7 @@ bin/console paypal:push P31D
 ```
 and for Boon use this command:
 ```bash
-bin/console boon:push P31D
+bin/console --bankNumber=X boon:push P31D
 ```
 See section _Import_ to understand the parameters.
 

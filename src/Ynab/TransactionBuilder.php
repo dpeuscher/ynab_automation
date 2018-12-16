@@ -59,7 +59,8 @@ class TransactionBuilder implements LoggerAwareInterface
             return $transaction->getBookingText() === 'Gebühren';
         });
         $debits = array_filter($newTransactions, function (Transaction $transaction) {
-            return $transaction->getBookingText() === 'Lastschrift (Einzugsermächtigung)' || $transaction->getBookingText() === 'Dauerauftrag';
+            return \in_array($transaction->getBookingText(),
+                ['Lastschrift (Einzugsermächtigung)', 'Dauerauftrag', 'Euroscheck / GAA-Belastung Ausland'], true);
         });
         $bonuses = array_filter($newTransactions, function (Transaction $transaction) {
             return \in_array($transaction->getBookingText(),

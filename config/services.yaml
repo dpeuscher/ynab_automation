@@ -5,7 +5,8 @@ parameters:
     ynab_budget_2: '%env(YNAB_BUDGET_2)%'
     ynab_account_name_1: '%env(YNAB_ACCOUNT_NAME_1)%'
     ynab_account_name_2: '%env(YNAB_ACCOUNT_NAME_2)%'
-    ynab_account_boon: '%env(YNAB_ACCOUNT_BOON)%'
+    ynab_account_boon_1: '%env(YNAB_ACCOUNT_BOON_1)%'
+    ynab_account_boon_2: '%env(YNAB_ACCOUNT_BOON_2)%'
     ynab_account_paypal: '%env(YNAB_ACCOUNT_PAYPAL)%'
     ifttt_webhook_key: '%env(IFTTT_WEBHOOK_KEY)%'
     ifttt_webhook_name: '%env(IFTTT_WEBHOOK_NAME)%'
@@ -51,6 +52,20 @@ services:
             $bankCode: '%env(FHP_BANK_CODE_2)%'
             $username: '%env(FHP_ONLINE_BANKING_USERNAME_2)%'
             $pin: '%env(FHP_ONLINE_BANKING_PIN_2)%'
+
+    retrieve:boontransaction:service:1:
+        class: App\Boon\RetrieveBoonTransactionService
+        public: true
+        arguments:
+            $username: '%env(BOON_USERNAME_1)%'
+            $password: '%env(BOON_PASSWORD_1)%'
+
+    retrieve:boontransaction:service:2:
+        class: App\Boon\RetrieveBoonTransactionService
+        public: true
+        arguments:
+            $username: '%env(BOON_USERNAME_2)%'
+            $password: '%env(BOON_PASSWORD_2)%'
 
     retrieve:transaction:service:1:
         class: App\Bank\RetrieveTransactionService
