@@ -3918,12 +3918,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "38eddac85b7ea1891fc28aeb71c1e45fa01200ad"
+                "reference": "a48fd4d7ebb8a293bf287a9130bc219bb402db1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/38eddac85b7ea1891fc28aeb71c1e45fa01200ad",
-                "reference": "38eddac85b7ea1891fc28aeb71c1e45fa01200ad",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a48fd4d7ebb8a293bf287a9130bc219bb402db1b",
+                "reference": "a48fd4d7ebb8a293bf287a9130bc219bb402db1b",
                 "shasum": ""
             },
             "conflict": {
@@ -3987,6 +3987,7 @@
                 "la-haute-societe/tcpdf": "<6.2.22",
                 "laravel/framework": ">=4,<4.0.99|>=4.1,<=4.1.31|>=4.2,<=4.2.22|>=5,<=5.0.35|>=5.1,<=5.1.46|>=5.2,<=5.2.45|>=5.3,<=5.3.31|>=5.4,<=5.4.36|>=5.5,<5.5.42|>=5.6,<5.6.30",
                 "laravel/socialite": ">=1,<1.0.99|>=2,<2.0.10",
+                "league/commonmark": ">=0.15.6,<0.18.1",
                 "magento/magento1ce": "<1.9.4",
                 "magento/magento1ee": ">=1.9,<1.14.4",
                 "magento/product-community-edition": ">=2,<2.2.7",
@@ -4112,7 +4113,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2018-12-28T16:50:10+00:00"
+            "time": "2018-12-30T08:17:20+00:00"
         },
         {
             "name": "symfony/dotenv",
