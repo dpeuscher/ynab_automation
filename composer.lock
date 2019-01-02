@@ -3918,12 +3918,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "a48fd4d7ebb8a293bf287a9130bc219bb402db1b"
+                "reference": "5f3e0c82ada2d16fdd637b24e095888f4abac43f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a48fd4d7ebb8a293bf287a9130bc219bb402db1b",
-                "reference": "a48fd4d7ebb8a293bf287a9130bc219bb402db1b",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/5f3e0c82ada2d16fdd637b24e095888f4abac43f",
+                "reference": "5f3e0c82ada2d16fdd637b24e095888f4abac43f",
                 "shasum": ""
             },
             "conflict": {
@@ -4113,7 +4113,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2018-12-30T08:17:20+00:00"
+            "time": "2018-12-30T13:00:21+00:00"
         },
         {
             "name": "symfony/dotenv",
