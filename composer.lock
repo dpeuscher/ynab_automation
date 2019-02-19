@@ -1429,12 +1429,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dpeuscher/ynab-sdk-php.git",
-                "reference": "0e7ded27acf041fbe098fa77e4d879b7afb8c8f8"
+                "reference": "62e0e26ec4fa9198b3eecb6d68f34155633184ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dpeuscher/ynab-sdk-php/zipball/0e7ded27acf041fbe098fa77e4d879b7afb8c8f8",
-                "reference": "0e7ded27acf041fbe098fa77e4d879b7afb8c8f8",
+                "url": "https://api.github.com/repos/dpeuscher/ynab-sdk-php/zipball/62e0e26ec4fa9198b3eecb6d68f34155633184ca",
+                "reference": "62e0e26ec4fa9198b3eecb6d68f34155633184ca",
                 "shasum": ""
             },
             "require": {
@@ -1442,10 +1442,12 @@
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^6.2",
-                "php": ">=7.1"
+                "php": ">=5.5"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8"
+                "friendsofphp/php-cs-fixer": "~1.12",
+                "phpunit/phpunit": "^4.8",
+                "squizlabs/php_codesniffer": "~2.6"
             },
             "type": "library",
             "autoload": {
@@ -1453,18 +1455,22 @@
                     "YNAB\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "YNAB\\": "test/"
+                }
+            },
             "license": [
                 "Apache-2.0"
             ],
             "authors": [
                 {
-                    "name": "Swagger and contributors",
-                    "homepage": "https://github.com/swagger-api/swagger-codegen"
-                },
-                {
                     "name": "Jorijn Schrijvershof <jorijn@jorijn.com>",
                     "homepage": "https://jorijn.com"
+                },
+                {
+                    "name": "Swagger and contributors",
+                    "homepage": "https://github.com/swagger-api/swagger-codegen"
                 }
             ],
             "description": "(non-official) YNAB API PHP Library",
@@ -1476,7 +1482,10 @@
                 "swagger",
                 "ynab"
             ],
-            "time": "2018-08-26T09:49:46+00:00"
+            "support": {
+                "source": "https://github.com/dpeuscher/ynab-sdk-php/tree/master"
+            },
+            "time": "2018-04-23T22:16:18+00:00"
         },
         {
             "name": "mschindler83/fints-hbci-php",
