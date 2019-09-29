@@ -14,6 +14,7 @@ class BoonTransaction implements YnabCompatibleTransaction
     public const TRANSACTION_TYPE_USAGE = 'CARD_USAGE';
     public const TRANSACTION_TYPE_REFILL = 'CREDIT_CARD_TOPUP';
     public const TRANSACTION_TYPE_COUPON = 'COUPON';
+    public const TRANSACTION_TYPE_CONTRACT_FEE = 'CONTRACT_RENEWAL_FEE';
 
     /**
      * @ORM\Id()

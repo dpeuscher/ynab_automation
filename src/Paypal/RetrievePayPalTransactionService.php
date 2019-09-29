@@ -147,7 +147,7 @@ class RetrievePayPalTransactionService implements LoggerAwareInterface
                     . ($transaction->transaction_info->custom_field ?? '') . ','
                     . ($itemString ?? '')
                 ),
-                'payer'                  => $transaction->payer_info->payer_name->alternate_full_name ?? null,
+                'payer'                  => $transaction->payer_info->payer_name->alternate_full_name ?? $transaction->payer_info->email_address ?? '',
             ];
             $transactionTypeGroup = substr($transaction->transaction_info->transaction_event_code, 0, 3);
             switch ($transactionTypeGroup) {
@@ -180,6 +180,7 @@ class RetrievePayPalTransactionService implements LoggerAwareInterface
                 case self::TRANSACTION_TYPE_CODE_BILL_PAY:
                 case self::TRANSACTION_TYPE_CODE_ACCOUNT_CORRECTION:
                 case self::TRANSACTION_TYPE_CODE_TRANSACTIONS:
+                case self::TRANSACTION_TYPE_CODE_REVERSAL:
                     $transactionArray['type'] = PayPalTransaction::TRANSACTION_TYPE_PAYMENT;
                     break;
                 default:

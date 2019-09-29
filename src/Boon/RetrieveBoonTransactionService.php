@@ -68,6 +68,16 @@ class RetrieveBoonTransactionService
                 $currency = (string)$xmlTransaction->xpath('./w:amount/@currency')[0];
                 $amount = (float)$xmlTransaction->xpath('./w:amount')[0];
                 switch ($type) {
+                    case BoonTransaction::TRANSACTION_TYPE_CONTRACT_FEE:
+                        $amount *= -1;
+                        /** @noinspection UnnecessaryParenthesesInspection */
+                        $merchant = (string)(($xmlTransaction->xpath('./w:transaction-details/w:merchant') ?? [])[0] ?? 'Boon Contract Fee');
+                        /** @noinspection UnnecessaryParenthesesInspection */
+                        $merchantCity = (string)(($xmlTransaction->xpath('./w:transaction-details/w:merchant-city') ?? [])[0] ?? '');
+                        /** @noinspection UnnecessaryParenthesesInspection */
+                        $merchantCountry = (string)(($xmlTransaction->xpath('./w:transaction-details/w:merchant-country') ?? [])[0] ?? '');
+                        $merchantDescription = trim($merchantCity . ' ' . $merchantCountry) ?: '';
+                        break;
                     case BoonTransaction::TRANSACTION_TYPE_USAGE:
                         $amount *= -1;
                         /** @noinspection UnnecessaryParenthesesInspection */

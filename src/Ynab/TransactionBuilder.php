@@ -60,7 +60,12 @@ class TransactionBuilder implements LoggerAwareInterface
         });
         $debits = array_filter($newTransactions, function (Transaction $transaction) {
             return \in_array($transaction->getBookingText(),
-                ['Lastschrift (Einzugsermächtigung)', 'Dauerauftrag', 'Euroscheck / GAA-Belastung Ausland'], true);
+                [
+                    'Lastschrift (Einzugsermächtigung)',
+                    'Dauerauftrag',
+                    'Euroscheck / GAA-Belastung Ausland',
+                    'FOLGELASTSCHRIFT',
+                ], true);
         });
         $bonuses = array_filter($newTransactions, function (Transaction $transaction) {
             return \in_array($transaction->getBookingText(),
@@ -170,7 +175,7 @@ class TransactionBuilder implements LoggerAwareInterface
         array $namePayeeMap
     ): void {
         $payments = array_filter($newTransactions, function (BoonTransaction $transaction) {
-            return $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_USAGE;
+            return $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_USAGE || $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_CONTRACT_FEE;
         });
         $transfers = array_filter($newTransactions, function (BoonTransaction $transaction) {
             return $transaction->getType() === BoonTransaction::TRANSACTION_TYPE_REFILL;
